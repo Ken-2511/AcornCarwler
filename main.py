@@ -145,33 +145,33 @@ if __name__ == '__main__':
 
 		# for ECE311
 		pencil_button_css_selector = "#APP-ECE311H1-LEC-0102 > tr > td.changeActivity > button"
-		desired_pras = ["0101"]
+		desired_pras = ["0101", "0102"]
 		if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
 			pass
 		else:
 			logging.info("Button not available")
 			fail_count += 1
 
-		# ECE470
-		pencil_button_css_selector = "#APP-ECE470H1-LEC-0101 > tr > td.changeActivity > button"
-		desired_pras = ["0105"]
-		if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
-			pass
-		else:
-			logging.info("Button not available")
-			fail_count += 1
+		# # ECE470
+		# pencil_button_css_selector = "#APP-ECE470H1-LEC-0101 > tr > td.changeActivity > button"
+		# desired_pras = ["0105"]
+		# if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
+		# 	pass
+		# else:
+		# 	logging.info("Button not available")
+		# 	fail_count += 1
 
-		# ECE344
-		pencil_button_css_selector = "#APP-ECE344H1-LEC-0101 > tr > td.changeActivity > button"
-		desired_pras = ["0101"]
-		if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
-			pass
-		else:
-			logging.info("Button not available")
+		# # ECE344
+		# pencil_button_css_selector = "#APP-ECE344H1-LEC-0101 > tr > td.changeActivity > button"
+		# desired_pras = ["0101"]
+		# if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
+		# 	pass
+		# else:
+		# 	logging.info("Button not available")
 
 		if fail_count >= 1:
 			course_selection_notification("周杰伦 - 最伟大的作品.wav", "出错", "请查看终端的输出")
 			sys.exit(1)
 		
 		# 短暂等待后继续下一轮检查
-		time.sleep(3)
+		# time.sleep(1)
