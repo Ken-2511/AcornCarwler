@@ -8,7 +8,15 @@ import time
 import logging
 from course_enrolled import course_selection_notification
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# 配置logging，同时输出到文件和控制台
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('acorn_crawler.log', encoding='utf-8'),  # 输出到文件
+        logging.StreamHandler(sys.stdout)  # 输出到控制台
+    ]
+)
 
 def setup_driver():
 	"""设置并返回WebDriver实例"""
@@ -33,14 +41,13 @@ def click_pencil_button(driver, css_selector):
 		driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", button)
 		time.sleep(0.5)
 		
-		# 尝试使用JavaScript点击，避免被其他元素遮挡
+		# 首先尝试常规点击，如果不行则使用JavaScript点击
 		try:
-			driver.execute_script("arguments[0].click();", button)
-			logging.info("Button clicked using JavaScript")
-		except Exception:
-			# 如果JavaScript点击失败，尝试常规点击
 			button.click()
 			logging.info("Button clicked using regular click")
+		except Exception:
+			driver.execute_script("arguments[0].click();", button)
+			logging.info("Button clicked using JavaScript")
 		
 		time.sleep(1)
 		return True
@@ -74,6 +81,10 @@ def select_course_callback(driver, pra):
 		radio_button_locator = (By.ID, f"coursePRA{pra}")
 		radio_button = wait.until(EC.element_to_be_clickable(radio_button_locator))
 		radio_button.click()
+
+		modify_button_locator = (By.CSS_SELECTOR, "#modify")
+		modify_button = wait.until(EC.element_to_be_clickable(modify_button_locator))
+		modify_button.click()
 		logging.info("Selected course")
 		return True
 	except (NoSuchElementException, TimeoutException, StaleElementReferenceException) as e:
@@ -97,8 +108,8 @@ def check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
 				pass
 			else:
 				select_course_callback(driver, pra)
-				course_selection_notification(driver)
-				return True
+				course_selection_notification("周杰伦 - 外婆.wav", "选课提醒", "课选好了")
+				sys.exit(0)
 		# 关闭
 		close_button_locator = (By.CSS_SELECTOR, "button[data-ng-click='cancel()']")
 		close_button = wait.until(EC.element_to_be_clickable(close_button_locator))
@@ -150,8 +161,16 @@ if __name__ == '__main__':
 			logging.info("Button not available")
 			fail_count += 1
 
+		# ECE344
+		pencil_button_css_selector = "#APP-ECE344H1-LEC-0101 > tr > td.changeActivity > button"
+		desired_pras = ["0101"]
+		if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
+			pass
+		else:
+			logging.info("Button not available")
+
 		if fail_count >= 1:
-			course_selection_notification("周杰伦 - 外婆.wav", "出错", "请你查看终端的输出")
+			course_selection_notification("周杰伦 - 最伟大的作品.wav", "出错", "请查看终端的输出")
 			sys.exit(1)
 		
 		# 短暂等待后继续下一轮检查

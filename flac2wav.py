@@ -40,7 +40,7 @@ def convert_flac_to_wav(input_file, output_file=None):
 
 def main():
     # The specific FLAC file to convert
-    input_file = "周杰伦 - 外婆.flac"
+    input_file = "周杰伦 - 最伟大的作品.flac"
     
     # Convert the file
     success = convert_flac_to_wav(input_file)
