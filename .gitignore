@@ -1,4 +1,4 @@
 .idea/
 *.pyc
 __pycache__/
-acorn_crawler.log
+acorn_crawler_old.log

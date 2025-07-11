@@ -53,7 +53,7 @@ def _task_show_message_box(title, message):
 			title,  # lpCaption
 			win32con.MB_OK | win32con.MB_ICONWARNING  # uType
 		)
-		logging.info("[警告框线程] 警告框 '选课提醒 - 课选好了' 已成功弹出。")
+		logging.info(f"[警告框线程] 警告框 '{title} - {message}' 已成功弹出。")
 	except Exception as e:
 		logging.error(f"[警告框线程] 弹出警告框失败: {e}")
 
