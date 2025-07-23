@@ -3,10 +3,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
+import os
+import dotenv
 import sys
+import random
 import time
 import logging
 from course_enrolled import course_selection_notification
+
+# 配置dotenv
+dotenv.load_dotenv()
 
 # 配置logging，同时输出到文件和控制台
 logging.basicConfig(
@@ -58,13 +64,19 @@ def click_pencil_button(driver, css_selector):
 		logging.error(e)
 		return False
 
-def login_acorn(driver):
+def login_acorn(driver, username, password):
 	try:
 		url = "https://acorn.utoronto.ca"
 		driver.get(url)
 		logging.info(f"Navigated to {url}")
 		# wait until the user manually logged in
 		wait = WebDriverWait(driver, 100)
+		username_input = wait.until(EC.presence_of_element_located((By.ID, "username")))
+		password_input = wait.until(EC.presence_of_element_located((By.ID, "password")))
+		username_input.send_keys(username)
+		password_input.send_keys(password)
+		login_button = wait.until(EC.element_to_be_clickable((By.ID, "login-btn")))
+		login_button.click()
 		element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
 															 "#acorn-nav-side")))
 		url = "https://acorn.utoronto.ca/sws/#/courses/1"
@@ -103,8 +115,8 @@ def check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
 			span_locator = (By.CSS_SELECTOR, f"#PRA-{pra} > tr > td.spaceAvailability > div > div > div > div:nth-child(1) > span")
 			span_element = wait.until(EC.presence_of_element_located(span_locator))
 			span_text = span_element.text
-			logging.info(f"Extracted {span_text}")
-			if span_text == "Section Full" or span_text == "Currently Enrolled (Full)":
+			logging.info(f"Extracted '{span_text}'")
+			if span_text == "Section Full" or span_text == "Currently Enrolled (Full)" or span_text == "":
 				pass
 			else:
 				select_course_callback(driver, pra)
@@ -120,13 +132,19 @@ def check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
 		logging.warning(e)
 		return False
 
+def wait_random_time(min_seconds=10, max_seconds=20):
+	"""等待一个随机时间，避免被检测为机器人"""
+	wait_time = random.uniform(min_seconds, max_seconds)
+	logging.info(f"Waiting for {wait_time:.2f} seconds")
+	time.sleep(wait_time)
+
 
 if __name__ == '__main__':
 	driver = setup_driver()
 	if not driver:
 		sys.exit(1)
 
-	if login_acorn(driver):
+	if login_acorn(driver, os.getenv("ACORN_USERNAME"), os.getenv("ACORN_PASSWORD")):
 		logging.info("Logged in")
 	else:
 		logging.info("Failed to log in")
@@ -143,6 +161,8 @@ if __name__ == '__main__':
 			logging.info("Button not available")
 			fail_count += 1
 
+		wait_random_time()
+
 		# for ECE311
 		pencil_button_css_selector = "#APP-ECE311H1-LEC-0102 > tr > td.changeActivity > button"
 		desired_pras = ["0101", "0102"]
@@ -151,6 +171,8 @@ if __name__ == '__main__':
 		else:
 			logging.info("Button not available")
 			fail_count += 1
+
+		wait_random_time()
 
 		# # ECE470
 		# pencil_button_css_selector = "#APP-ECE470H1-LEC-0101 > tr > td.changeActivity > button"
@@ -170,8 +192,8 @@ if __name__ == '__main__':
 		# 	logging.info("Button not available")
 
 		if fail_count >= 1:
-			course_selection_notification("周杰伦 - 最伟大的作品.wav", "出错", "请查看终端的输出")
-			sys.exit(1)
-		
-		# 短暂等待后继续下一轮检查
-		# time.sleep(1)
+			if login_acorn(driver, os.getenv("ACORN_USERNAME"), os.getenv("ACORN_PASSWORD")):
+				fail_count = 0
+			else:
+				course_selection_notification("周杰伦 - 最伟大的作品.wav", "出错", "请查看终端的输出")
+				sys.exit(1)
