@@ -79,7 +79,7 @@ def login_acorn(driver, username, password):
 		login_button.click()
 		element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR,
 															 "#acorn-nav-side")))
-		url = "https://acorn.utoronto.ca/sws/#/courses/1"
+		url = "https://acorn.utoronto.ca/sws/#/courses/0"
 		driver.get(url)
 		logging.info(f"Navigated to {url}")
 		return True
@@ -152,20 +152,29 @@ if __name__ == '__main__':
 
 	fail_count = 0
 	while True:
-		# for ECE334
-		pencil_button_css_selector = "#APP-ECE334H1-LEC-0102 > tr > td.changeActivity > button"
-		desired_pras = ["0101", "0102"]
-		if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
-			pass
-		else:
-			logging.info("Button not available")
-			fail_count += 1
+		# # for ECE334
+		# pencil_button_css_selector = "#APP-ECE334H1-LEC-0102 > tr > td.changeActivity > button"
+		# desired_pras = ["0102"]
+		# if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
+		# 	pass
+		# else:
+		# 	logging.info("Button not available")
+		# 	fail_count += 1
+		#
+		# wait_random_time()
 
-		wait_random_time()
+		# # for ECE311
+		# pencil_button_css_selector = "#APP-ECE311H1-LEC-0102 > tr > td.changeActivity > button"
+		# desired_pras = ["0101", "0102"]
+		# if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
+		# 	pass
+		# else:
+		# 	logging.info("Button not available")
+		# 	fail_count += 1
 
-		# for ECE311
-		pencil_button_css_selector = "#APP-ECE311H1-LEC-0102 > tr > td.changeActivity > button"
-		desired_pras = ["0101", "0102"]
+		# # for ECE344
+		pencil_button_css_selector = "#APP-ECE344H1-PRA-0101 > tr > td.changeActivity > button"
+		desired_pras = ["0102"]
 		if check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
 			pass
 		else:
