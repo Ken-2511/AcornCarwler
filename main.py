@@ -132,7 +132,7 @@ def check_and_secure_course(driver, pencil_button_css_selector, desired_pras):
 		logging.warning(e)
 		return False
 
-def wait_random_time(min_seconds=10, max_seconds=20):
+def wait_random_time(min_seconds=15, max_seconds=20):
 	"""等待一个随机时间，避免被检测为机器人"""
 	wait_time = random.uniform(min_seconds, max_seconds)
 	logging.info(f"Waiting for {wait_time:.2f} seconds")
